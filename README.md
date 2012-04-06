@@ -112,6 +112,7 @@ The order of the imports is important.
 
 Display the form using this tag.
 This ensures that the form is posting the correct location.
+
 ```
 {% render_comment_form form %}
 ```
@@ -129,10 +130,10 @@ The files "list.html", "form.html" and "model_comment_form.html" can be placed i
 * templates/comments/app/*.html (customise templates for all models in this app)
 * templates/comments/*.html (site-wide template replacement)
 
+Some examples have been placed in model_comments/templates/app/model/
+
 * To modify the styling of how the comments are displayed, override "list.html".
 * To modify the styling of how area around the comment form, override "form.html" (stuff like previews, 'Post a comment' label, submit/preview buttons, etc).
 * To modify JUST the arrangement of the form fields, override "model_comment_form.html".
 
 Pre-Django 1.2 contrib.comment template filename formats are also supported (just like the contrib comments module).
-
-Some examples have been placed in model_comments/templates/app/model/
