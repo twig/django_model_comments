@@ -64,17 +64,14 @@ class ShirtCommentForm(CommentForm):
        
         return cleaned_data
 
-
     # (Required if customising data) Defaults to django.db.models.Model
     def get_target_model(self):
         return Shirt
-
     
     # (Required if customising data) Defaults to model_comments.models.Comment
     # (which is a proxy model for django.contrib.comments.models.Comment)
     def get_comment_model(self):
         return ShirtComment
-
 
     # (Optional) This allows you to fill in any data that is defined by your custom form/model
     def pre_save(self, request, comment):
@@ -82,7 +79,6 @@ class ShirtCommentForm(CommentForm):
         comment.rating = self.cleaned_data['rating']
         comment.price = self.cleaned_data['price']
         # ... etc
-
 
     # (Optional) Easy way to detect post-comment events without using signals
     def post_save(self, request, comment):
@@ -96,19 +92,29 @@ That's it for the backend stuff.
 #### Displaying
 
 The order of the imports is important.
+
+```
 {% load comments %}
 {% load model_comment_tags %}
+```
 
 (This is part of the default contrib comments module)
+
+```
 {% render_comment_list for shirt_obj %}
+```
 
 (This has the same name, but it's loaded from the model_comments module)
+
+```
 {% get_comment_form for shirt_obj as form %}
+```
 
 Display the form using this tag.
 This ensures that the form is posting the correct location.
+```
 {% render_comment_form form %}
-
+```
 
 
 #### Theming
@@ -118,13 +124,14 @@ Please note support for "preview.html" has been REMOVED.
 Previews are now shown on the same page which the form is shown, and just above the form.
 
 The files "list.html", "form.html" and "model_comment_form.html" can be placed in either:
+
 * templates/comments/app/model/*.html (only customise template for this model)
 * templates/comments/app/*.html (customise templates for all models in this app)
 * templates/comments/*.html (site-wide template replacement)
 
-To modify the styling of how the comments are displayed, override "list.html".
-To modify the styling of how area around the comment form, override "form.html" (stuff like previews, 'Post a comment' label, submit/preview buttons, etc).
-To modify JUST the arrangement of the form fields, override "model_comment_form.html".
+* To modify the styling of how the comments are displayed, override "list.html".
+* To modify the styling of how area around the comment form, override "form.html" (stuff like previews, 'Post a comment' label, submit/preview buttons, etc).
+* To modify JUST the arrangement of the form fields, override "model_comment_form.html".
 
 Pre-Django 1.2 contrib.comment template filename formats are also supported (just like the contrib comments module).
 
