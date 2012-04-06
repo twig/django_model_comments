@@ -51,11 +51,10 @@ class ShirtComment(Comment):
 
 
 Now to write up the comment form.
+
 ```
 from model_comments.forms import CommentForm
 from shirts.models import Shirt
-
-
 
 class ShirtCommentForm(CommentForm):
     # (Optional) Use this if you wish to do any custom validation
@@ -71,7 +70,8 @@ class ShirtCommentForm(CommentForm):
         return Shirt
 
     
-    # (Required if customising data) Defaults to model_comments.models.Comment (which is a proxy model for django.contrib.comments.models.Comment)
+    # (Required if customising data) Defaults to model_comments.models.Comment
+    # (which is a proxy model for django.contrib.comments.models.Comment)
     def get_comment_model(self):
         return ShirtComment
 
