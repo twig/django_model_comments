@@ -18,15 +18,14 @@
 #### Installation
 First of all, ensure that both 'model_comments' and 'django.contrib.comments' are included in INSTALLED_APPS.
 
-However, 'model_comments' MUST be included BEFORE 'django.contrib.comments'.
-
-Sorry, NO EXCEPTIONS.
-
+However, 'model_comments' MUST be included BEFORE 'django.contrib.comments'. Sorry, NO EXCEPTIONS.
 
 Now, make sure in your urls.py you've replaced:
+
 (r'^comments/', include('django.contrib.comments.urls')),
 
 with this:
+
 (r'^comments/', include('model_comments.urls')),
 
 
@@ -130,10 +129,12 @@ The files "list.html", "form.html" and "model_comment_form.html" can be placed i
 * templates/comments/app/*.html (customise templates for all models in this app)
 * templates/comments/*.html (site-wide template replacement)
 
-Some examples have been placed in model_comments/templates/app/model/
+Some examples have been placed in model_comments/templates/comments/app/model/
 
 * To modify the styling of how the comments are displayed, override "list.html".
 * To modify the styling of how area around the comment form, override "form.html" (stuff like previews, 'Post a comment' label, submit/preview buttons, etc).
 * To modify JUST the arrangement of the form fields, override "model_comment_form.html".
+
+For my example, the files would be /templates/comments/shirts/shirt/
 
 Pre-Django 1.2 contrib.comment template filename formats are also supported (just like the contrib comments module).
