@@ -5,7 +5,7 @@
 
 #### Features
 * First and foremost, allows you to associate various comment models to specific target models
-* Link your comment models directly to the target model in ORM without any hacks like in the contrib comment module
+* Link your comment models directly to the target model in ORM without any hacks like in the contrib comment module (ie. Store.object.filter(comments__user = bob)
 * Allows custom validation in forms and doesn't raise 500 if fields are invalid
 * Display comment previews in the current page, without having to redirect the user to a blank page
 * Easier to implement pre-post comment events WITHOUT using signals
