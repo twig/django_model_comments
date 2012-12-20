@@ -4,7 +4,8 @@ from django.conf.urls.defaults import *
 
 # This is the only thing changed so it points to model_comments.views.post_comment
 urlpatterns = patterns('model_comments.views',
-    url(r'^post/$',          'post_comment',       name='comments-post-comment'),
+    url(r'^post/$', 'post_comment', name = 'comments-post-comment'),
+    url(r'^spam/(?P<comment_id>\d+)$', 'mark_as_spam', name = 'comments-mark-as-spam'),
 )
 
 #urlpatterns += patterns('django.contrib.comments.views',

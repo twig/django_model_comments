@@ -17,7 +17,7 @@ from twigcorp.utils import Url
 
 
 class CommentForm(DjangoCommentForm):
-    honeypot = forms.CharField(required=False, label='', widget=forms.widgets.TextInput(attrs={ 'style': 'display: none;' }))
+    honeypot = forms.CharField(required=False, label='')
     from_url = forms.CharField(widget=forms.HiddenInput())
 
 
@@ -143,7 +143,21 @@ class CommentForm(DjangoCommentForm):
         if self.request.user.is_anonymous() and not email:
             raise forms.ValidationError("Email is required for unregistered users.")
 
+        # Impose the limits that the framework forgot
+        if len(email) > 75:
+            raise forms.ValidationError("Ensure this value has at most 75 characters (it has %s)." % len(email))
+
         return email
+
+
+    # Impose the limits that the framework forgot
+    def clean_url(self):
+        url = self.cleaned_data['url']
+        
+        if len(url) > 200:
+            raise forms.ValidationError("Ensure this value has at most 200 characters (it has %s)." % len(url))
+        
+        return url
 
     
     def clean(self):
@@ -156,7 +170,12 @@ class CommentForm(DjangoCommentForm):
         if not hasattr(self, 'request'):
             raise forms.ValidationError("CommentForm.clean(): You must call validate_data(request)")
 
-        
+
+        # If there are basic errors, display them before getting to the more complicated ones
+        if self.errors:
+            return self.cleaned_data
+
+
         # Do custom validation first
         cleaned_data = super(CommentForm, self).clean()
         cleaned_data = self.clean_model_comment(self.request, cleaned_data)

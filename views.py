@@ -1,19 +1,21 @@
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 from django.contrib.comments.views.comments import CommentPostBadRequest
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.context import RequestContext
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseNotAllowed
 from django.core import urlresolvers
 from django.conf import settings
 from django.contrib.comments.signals import comment_was_posted
+from django.contrib.comments.models import Comment
 
 from model_comments.forms import CommentForm
 from model_comments.utils import get_form_class_for_object
 from twigcorp.utils import Url
+from django.contrib.auth.decorators import login_required
 
 
 @csrf_protect
@@ -167,3 +169,16 @@ def post_comment(request, using = None):
     redirect_url.fragment = "c%s" % comment.pk # The name of this comment fragment is poo, but I'm sure people are using it already so no changing
 
     return HttpResponseRedirect(u"%s" % redirect_url)
+
+
+
+@login_required
+def mark_as_spam(request, comment_id):
+    if not request.user.is_staff:
+        return HttpResponseNotAllowed("You don't have sufficient access to mark this as spam.")
+
+    comment = get_object_or_404(Comment, pk = comment_id)
+    comment.is_removed = True
+    comment.save()
+    
+    return render_to_response('comments/mark_as_spam.html', { 'comment': comment }, context_instance = RequestContext(request))
