@@ -29,6 +29,17 @@ with this:
 (r'^comments/', include('model_comments.urls')),
 
 
+### Options
+In your settings file, you can set the following options.
+
+```
+COMMENTS_CHECK_REGISTERED_USER_EMAIL = True
+```
+If an Anonymous user uses an email address of a registered user, this check ensures they must be logged in to comment with the givenemail address.
+By default this is False.
+
+
+
 #### Implementation
 For example, I have a bunch of Shirt objects I want to comment on, but I want to use a different form which contains rating/designed by/price/colour/etc.
 
@@ -90,10 +101,15 @@ That's it for the backend stuff.
 
 #### Displaying
 
-The order of the imports is important.
+Replace any instances of.
 
 ```
 {% load comments %}
+```
+
+With
+
+```
 {% load model_comment_tags %}
 ```
 
@@ -123,13 +139,19 @@ Well, I promised theming would be made easier.
 Please note support for "preview.html" has been REMOVED.
 Previews are now shown on the same page which the form is shown, and just above the form.
 
-The files "list.html", "form.html" and "model_comment_form.html" can be placed in either:
+The files:
+* list.html: To modify the styling of how the comments are displayed
+* form.html: To modify the styling of how area around the comment form (stuff like previews, 'Post a comment' label, submit/preview buttons, etc). This is called by {% render_comment_form %} and passing it a form.
+* model_comment_form.html: To modify JUST the arrangement of the form fields. This is the same as calling {{form}} in the template.
+* model_comment_preview.html: To modify the comment preview, handled by {{form|preview_comment}}
+
+Can be placed in either:
 
 * templates/comments/app/model/*.html (only customise template for this model)
 * templates/comments/app/*.html (customise templates for all models in this app)
 * templates/comments/*.html (site-wide template replacement)
 
-Some examples have been placed in model_comments/templates/comments/app/model/
+Some examples have been placed in model_comments/templates/comments/app/model/.
 
 * To modify the styling of how the comments are displayed, override "list.html".
 * To modify the styling of how area around the comment form, override "form.html" (stuff like previews, 'Post a comment' label, submit/preview buttons, etc).

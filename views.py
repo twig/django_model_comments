@@ -11,11 +11,13 @@ from django.core import urlresolvers
 from django.conf import settings
 from django.contrib.comments.signals import comment_was_posted
 from django.contrib.comments.models import Comment
+from django.utils.html import escape
+from django.contrib.auth.decorators import login_required
 
 from model_comments.forms import CommentForm
 from model_comments.utils import get_form_class_for_object
 from twigcorp.utils import Url
-from django.contrib.auth.decorators import login_required
+
 
 
 @csrf_protect
@@ -96,7 +98,7 @@ def post_comment(request, using = None):
 #        
 #        print template_list
 
-        from_url = data.get('from_url', None)
+        from_url = data.get('from_url', '')
 
         # Otherwise call the view and return the data
         # @see http://djangosnippets.org/snippets/1568/

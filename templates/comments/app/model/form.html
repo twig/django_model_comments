@@ -4,13 +4,15 @@
 
 {% block content %}
 
+<a name="preview"></a>
+
 {% if form.is_valid and form.preview %}
 	{{ form|preview_comment }}
 {% endif %}
 
 <b>Post your comment</b>
 
-<form action="{% comment_form_target %}" method="post" class="model-comment-form model-comment-form-{{ form.get_model_name }}">
+<form action="{% comment_form_target %}#preview" method="post" class="model-comment-form model-comment-form-{{ form.get_model_name }}">
 	{{ form }}
 
     <p class="submit">

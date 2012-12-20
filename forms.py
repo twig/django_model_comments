@@ -37,6 +37,8 @@ class CommentForm(DjangoCommentForm):
         """
         Return the model type you wish to comment on.
         ie. Shirt, Store, BlogPost, etc
+        
+        Raise NotImplementedError if your form is a base form that should not be used.
         """
         return models.Model
 
@@ -101,7 +103,7 @@ class CommentForm(DjangoCommentForm):
         self.request = request
         
         if not self.fields['from_url'].initial:
-            self.fields['from_url'].initial = str(Url(request))
+            self.fields['from_url'].initial = unicode(Url(request))
         
         if request.user.is_authenticated():
             if not self.fields['name'].initial:
@@ -178,8 +180,13 @@ class CommentForm(DjangoCommentForm):
 
         # Do custom validation first
         cleaned_data = super(CommentForm, self).clean()
-        cleaned_data = self.clean_model_comment(self.request, cleaned_data)
         
+        # Strip whitespace off fields
+        for fieldname in [ 'comment', 'email', 'name', 'url' ]:
+            cleaned_data[fieldname] = cleaned_data[fieldname].strip()
+        
+        cleaned_data = self.clean_model_comment(self.request, cleaned_data)
+
         # Prevent anonymous users masquerading as registered users
         if self.request.user.is_anonymous():
             email = cleaned_data.get('email', None)
@@ -187,11 +194,12 @@ class CommentForm(DjangoCommentForm):
             if email is None:
                 raise forms.ValidationError("Unregistered users must fill in the email field.")
             
-            try:
-                user = User.objects.get(email__iexact=email)
-                raise forms.ValidationError("This email beings to a registered user. If this is yours, please log in.")
-            except User.DoesNotExist:
-                pass
+            if getattr(settings, 'COMMENTS_CHECK_REGISTERED_USER_EMAIL', False):
+                try:
+                    user = User.objects.get(email__iexact=email)
+                    raise forms.ValidationError("This email beings to a registered user. If this is yours, please log in.")
+                except User.DoesNotExist:
+                    pass
 
         # Begin sending out "pre-save" messages
         # This requires the form to be valid!
@@ -246,11 +254,11 @@ class CommentForm(DjangoCommentForm):
             "comments/%s/model_comment_form.html" % model._meta.app_label,
             "comments/model_comment_form.html",
         ]
-
-        try:
-            return render_to_string(template_list, { 'form': self, })
-        except Exception, e:
-            print e
+        
+#        try:
+        return render_to_string(template_list, { 'form': self, })
+#        except Exception, e:
+#            print e
         
         # Default handler
         return super(CommentForm, self).__unicode__()

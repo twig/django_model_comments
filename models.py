@@ -27,4 +27,4 @@ class Comment(DjangoComment):
     objects = CommentManager()
 
     def __unicode__(self):
-        return "%s: %s" % (self.user, self.comment)
+        return "%s: %s" % (self.user or self.user_name, self.comment)

@@ -6,8 +6,11 @@ from django.template import Library, TemplateSyntaxError, resolve_variable
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
+from django.contrib.comments.templatetags.comments import *
+from django.template.context import RequestContext
 
 from model_comments.forms import CommentForm
+from model_comments.models import Comment
 from model_comments.utils import get_form_class_for_object
 from twigcorp.utils import ContextNode
 
@@ -94,7 +97,7 @@ def render_comment_form(form):
         "comments/form.html",
     ]
     
-    return render_to_string(template_list, { 'form': form, })
+    return render_to_string(template_list, { 'form': form, }, context_instance = RequestContext(form.request))
 
 
 
@@ -118,3 +121,48 @@ def preview_comment(form):
         ]
     
     return render_to_string(template_list, c)
+
+
+
+@register.tag
+def get_comment_list(parser, token):
+    """
+    {% get_comment_list for node as comment_list [reversed] %}
+
+    reversed is optional
+    
+    # TODO: We can cache this, and then clear the cache every time a comment is posted for a given object
+    """
+    bits = token.split_contents()
+    
+    bits.pop(0) # get_comment_list
+    bits.pop(0) # for
+    obj_var = bits.pop(0) # object
+    bits.pop(0) # as
+    varname = bits.pop(0)
+    reversed = None
+    
+    if len(bits):
+        reversed = bits.pop(0)
+
+    def wrap(context):
+        obj = resolve_variable(obj_var, context)
+        ctype = ContentType.objects.get_for_model(obj)
+        form_class = get_form_class_for_object(obj)
+        form = form_class(obj)
+        comments = form.get_comment_model().objects.valid().filter(content_type = ctype, object_pk = str(obj.pk))
+        
+        if reversed:
+            comments = comments.order_by('-submit_date')
+        
+        context[varname] = comments
+        return ''
+
+    return ContextNode(wrap)
+
+
+
+# These come from the original comments tag file
+register.tag(get_comment_count) # TODO: cache this
+register.simple_tag(get_comment_permalink)
+register.tag(render_comment_list)
