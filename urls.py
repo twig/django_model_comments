@@ -1,6 +1,6 @@
 # This was copied from django.contrib.comments.urls
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 # This is the only thing changed so it points to model_comments.views.post_comment
 urlpatterns = patterns('model_comments.views',

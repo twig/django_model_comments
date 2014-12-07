@@ -16,6 +16,7 @@
 	{{ form }}
 
     <p class="submit">
+    {% csrf_token %}
     <input type="submit" name="submit" class="submit-post" value="Post" />
     <input type="submit" name="preview" class="submit-preview" value="Preview" />
     </p>
